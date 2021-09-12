@@ -10,7 +10,6 @@ declare FORMAT_SUMMARY="--format=%s"
 declare FORMAT_BODY="--format=%b"
 
 function distinguish_os {
-    ######################################################
     # Distinguish between MacOS, Ubuntu, and another Linux
     case "$( uname )" in
       "Darwin")  SEND_NOTIFY="osascript -e ";;
@@ -20,7 +19,6 @@ function distinguish_os {
 }
 
 function log {
-    ######################################################
     # Enable verbose logging; adds "[date]: " prefix
     if [ $verbose = true ]; then
         (>&2 echo "[$(date)]: $@")
@@ -30,26 +28,22 @@ function log {
 }
 
 function ps_jobs {
-    ######################################################
     # Search for current job in running processes
     local curr_comm=$(ps -o command -p "$$" | grep -v COMMAND)
     ps $2 | grep -v "$curr_comm" | grep "$1" | grep -v "grep $1" || true
 }
 
 function count {
-    ######################################################
     # Get count of background jobs
     echo "$bg_jobs" | sed '/^\s*$/d' | wc -l | tr -d ' '
 }
 
 function git-curr-branch {
-    ######################################################
     # Get current git branch; form: "remote"/"branch"
     git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null
 }
 
 function show_help {
-    ######################################################
     # Prints help message
     cat << EOF
 ######################################################
@@ -75,7 +69,6 @@ EOF
 }
 
 function parse_cmd_args { local args=$@
-    ######################################################
     # Parses command line options; see help file for options
     local OPTIND opts a
     branch=$(git-curr-branch || echo "origin/master")
@@ -103,7 +96,8 @@ function parse_cmd_args { local args=$@
             bg_count=$(count "$bg_jobs")
             log "Running background jobs: $bg_count"
             if [ $bg_count -gt 0 ]; then
-                ps -fp 0 | head -n 1 # print ps column names header
+                # Print ps column names header
+                ps -fp 0 | head -n 1
                 echo "$bg_jobs"
             fi
             exit 0
@@ -136,27 +130,26 @@ function parse_cmd_args { local args=$@
 }
 
 function run {
-    ######################################################
     # Run function
     latest_revision="none"
-    # loop forever, need to kill the process explicitly to stop.
+    # Loop forever, need to kill the process explicitly to stop.
     while [ 1 ]; do
-        # get the latest revision SHA.
+        # Get the latest revision SHA.
         current_revision=$(git rev-parse $REPOSITORY)
 
-        # if we haven't seen that one yet, then we know there's new stuff.
+        # If we haven't seen that one yet, then we know there's new stuff.
         if [ $latest_revision != $current_revision ]; then
             log "Changed! New revision: $current_revision"
-            # mark the newest revision as seen.
+            # Mark the newest revision as seen.
             latest_revision=$current_revision
 
-            # extract the details from the log.
+            # Extract the details from the log.
             commit_name=`git log -1 $FORMAT_NAME $latest_revision`
             commit_when=`git log -1 $FORMAT_WHEN $latest_revision`
             commit_summary=`git log -1 $FORMAT_SUMMARY $latest_revision`
             commit_body=`git log -1 $FORMAT_BODY $latest_revision`
 
-            # notify the user of the commit.
+            # Notify the user of the commit.
             summary="$commit_name committed to $REPOSITORY $commit_when!"
             body="$commit_summary\n\n$commit_body"
             if [ "`uname`" == "Darwin" ]; then
@@ -171,10 +164,8 @@ function run {
 }
 
 function main {
-    ######################################################
     # Main function; most of logic driven by run()
     parse_cmd_args "$@"
-    #latest_revision="$(git rev-parse $REPOSITORY)"
     log "Watching branch $branch..."
 
     # Test git repository and start execution
