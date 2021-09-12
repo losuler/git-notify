@@ -46,25 +46,17 @@ function git-curr-branch {
 function show_help {
     # Prints help message
     cat << EOF
-######################################################
-# git-notify: Simple bash script to watch git repos and use desktop notifications upon detection of new commits.
-#
-# USAGE: ./git-notify [OPTIONS]
-#  Alternatively, add git-notify to your path by specifying the path to the repo in your shell's config:
-#   * echo 'export PATH=/your/full/path/to/git-notify:\$PATH' >> ~/.zshrc
-#   * echo 'export PATH=/your/full/path/to/git-notify:\$PATH' >> ~/.bashrc
-#  And then use just: "git-notify [OPTIONS]"
-#
-# OPTIONS:
-#  -b <BRANCH>:         branch        Specifies the branch to run against (default origin/master)
-#  -r <REPOSITORY>:     repository    Specify what repository to watch (default origin/master)
-#  -t <TIME>:           refresh_delay Time to wait inbetween checking, in seconds (default 60)
-#  -a:                  async         Runs the job in the background (via &)
-#  -v:                  verbose       Set verbose logging on (adds "[date]: " prefix)
-#  -l:                  bg_jobs       Find all git-notify background jobs currently running
-#  -k:                  kill          Kill all backgrounded git-notify jobs
-#  -h:                  help          Print help and exit
-######################################################
+Usage: git-notify [OPTION]...
+Watch git repos and be notified upon detection of new commits.
+
+  -b BRANCH     Specifies the branch to run against (default origin/master)
+  -r REPOSITORY Specify what repository to watch (default origin/master)
+  -t TIME       Time to wait inbetween checking, in seconds (default 60)
+  -a            Runs the job in the background (via &)
+  -v            Set verbose logging on (adds "[date]: " prefix)
+  -l            Find all git-notify background jobs currently running
+  -k            Kill all backgrounded git-notify jobs
+  -h            Print help and exit
 EOF
 }
 
