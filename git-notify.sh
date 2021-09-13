@@ -151,7 +151,7 @@ function run {
             if [ $CONFIG != "" ]; then
                 source $CONFIG
                 markdown_body="**$summary**\n$commit_summary\n$commit_body"
-                html_body="<strong>$summary</strong></br>$commit_summary</br>$commit_body"
+                html_body="<strong>$summary</strong><br>$commit_summary<br>$commit_body"
                 path="_matrix/client/r0/rooms/$MATRIX_ROOM:$MATRIX_DOMAIN/send/m.room.message"
                 query="?access_token=$MATRIX_TOKEN"
 
