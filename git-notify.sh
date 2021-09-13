@@ -69,7 +69,7 @@ function parse_cmd_args { local args=$@
     refresh_delay=60
     verbose=false
 
-    while getopts ":b:t:r:avlkh" opt; do
+    while getopts ":b:t:r:c:avlkh" opt; do
         case "$opt" in
         b)  branch="$OPTARG"
             ;;
