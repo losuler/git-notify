@@ -52,6 +52,7 @@ Watch git repos and be notified upon detection of new commits.
   -b BRANCH     Specifies the branch to run against (default origin/master)
   -r REPOSITORY Specify what repository to watch (default origin/master)
   -t TIME       Time to wait inbetween checking, in seconds (default 60)
+  -c PATH       Path to the config file
   -a            Runs the job in the background (via &)
   -v            Set verbose logging on (adds "[date]: " prefix)
   -l            Find all git-notify background jobs currently running
@@ -83,6 +84,8 @@ function parse_cmd_args { local args=$@
         v)  verbose=true
             ;;
         r)  REPOSITORY="$OPTARG"
+            ;;
+        c)  CONFIG="$OPTARG"
             ;;
         l)  bg_jobs=$(ps_jobs "$0" "-eaf")
             bg_count=$(count "$bg_jobs")
@@ -144,7 +147,22 @@ function run {
             # Notify the user of the commit.
             summary="$commit_name committed to $REPOSITORY $commit_when!"
             body="$commit_summary\n\n$commit_body"
-            if [ "`uname`" == "Darwin" ]; then
+
+            if [ $CONFIG != "" ]; then
+                source $CONFIG
+                markdown_body="**$summary**\n$commit_summary\n$commit_body"
+                html_body="<strong>$summary</strong></br>$commit_summary</br>$commit_body"
+                path="_matrix/client/r0/rooms/$MATRIX_ROOM:$MATRIX_DOMAIN/send/m.room.message"
+                query="?access_token=$MATRIX_TOKEN"
+
+                curl -X PUT --header 'Content-Type: application/json' \
+                    --header 'Accept: application/json' \
+                    -d "{\"msgtype\":\"m.notice\",
+                    \"body\":\"$markdown_body\",
+                    \"format\":\"org.matrix.custom.html\",
+                    \"formatted_body\":\"$html_body\"}" \
+                    "https://$MATRIX_DOMAIN/$path/$(date +%s)$query"
+            elif [ "`uname`" == "Darwin" ]; then
                 command="osascript -e 'display notification \"$body\" with title \"$summary\"'"
                 eval $command
             else
