@@ -56,3 +56,7 @@ By default, `Script Editor` uses the `Banners` type message. Switching to the `A
     <td><img src="img/alert-notif-type-mac.png" alt="Alert" style="width: 250px;"/></td>
   </tr>
 </table>
+
+## Acknowledgements
+
+This is based off of the pull request [bigpick/git-notify](https://github.com/jakeonrails/git-notify/pull/12) for the original project at [jakeonrails/git-notify](https://github.com/jakeonrails/git-notify). In the event this pull request gets merged, I would send a pull request of some of my own changes, if they were desired.
