@@ -1,0 +1,12 @@
+[Unit]
+Description=Git commit alerts
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+ExecStart=/usr/bin/bash /usr/bin/git-notify -c /etc/git-notify.conf
+Restart=always
+#WorkingDirectory=/path/to/repo
+
+[Install]
+WantedBy=multi-user.target
