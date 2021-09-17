@@ -20,6 +20,7 @@ Requires:       util-linux
 Requires:       curl
 
 Recommends:     libnotify
+BuildArch:      noarch
 
 %description
 A small bash script to watch a git repo and send alerts of any new commits.
