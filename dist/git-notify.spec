@@ -1,8 +1,8 @@
-%global commit 7a2262046fb41c328673e26ec20b7c0ee6f59293
+%global commit 97d8002fb69c582ce9473d4e6284f81d59e9a46b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           git-notify
-Version:        0^20210615.%{shortcommit}
+Version:        0^20210617.%{shortcommit}
 Release:        1%{?dist}
 Summary:        Git commit alerts
 
@@ -45,5 +45,5 @@ install -m 0644 dist/%{name}.service %{buildroot}/%{_userunitdir}/
 %{_userunitdir}/%{name}.service
 
 %changelog
-* Thu Sep 16 2021 losuler <losuler@posteo.net> - 0^20210915.7a22620-1
+* Fri Sep 17 2021 losuler <losuler@posteo.net> - 0^20210917.97d8002-1
 - Initial release.
