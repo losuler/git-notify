@@ -132,43 +132,52 @@ function run {
         # Get the latest revision SHA.
         current_revision=$(git rev-parse $REPOSITORY)
 
-        # If we haven't seen that one yet, then we know there's new stuff.
-        if [ $latest_revision != $current_revision ]; then
-            log "Changed! New revision: $current_revision"
-            # Mark the newest revision as seen.
-            latest_revision=$current_revision
+        # Skip if it's the same revision.
+        if [ $latest_revision == $current_revision ]; then
+            continue
+            sleep "$refresh_delay"
+        fi
 
-            # Extract the details from the log.
-            commit_name=`git log -1 $FORMAT_NAME $latest_revision`
-            commit_when=`git log -1 $FORMAT_WHEN $latest_revision`
-            commit_summary=`git log -1 $FORMAT_SUMMARY $latest_revision`
-            commit_body=`git log -1 $FORMAT_BODY $latest_revision`
+        log "Changed! New revision: $current_revision"
 
-            # Notify the user of the commit.
-            summary="$commit_name committed to $REPOSITORY $commit_when!"
-            body="$commit_summary\n\n$commit_body"
+        # Mark the newest revision as seen.
+        latest_revision=$current_revision
 
-            if [ $CONFIG != "" ]; then
-                source $CONFIG
-                markdown_body="**$summary**\n$commit_summary\n$commit_body"
-                html_body="<strong>$summary</strong><br>$commit_summary<br>$commit_body"
-                path="_matrix/client/r0/rooms/$MATRIX_ROOM:$MATRIX_DOMAIN/send/m.room.message"
-                query="?access_token=$MATRIX_TOKEN"
+        # Extract the details from the log.
+        commit_name=`git log -1 $FORMAT_NAME $latest_revision`
+        commit_when=`git log -1 $FORMAT_WHEN $latest_revision`
+        commit_summary=`git log -1 $FORMAT_SUMMARY $latest_revision`
+        commit_body=`git log -1 $FORMAT_BODY $latest_revision`
 
-                curl -X PUT --header 'Content-Type: application/json' \
-                    --header 'Accept: application/json' \
-                    -d "{\"msgtype\":\"m.notice\",
-                    \"body\":\"$markdown_body\",
-                    \"format\":\"org.matrix.custom.html\",
-                    \"formatted_body\":\"$html_body\"}" \
-                    "https://$MATRIX_DOMAIN/$path/$(date +%s)$query"
-            elif [ "`uname`" == "Darwin" ]; then
+        # Notify the user of the commit.
+        summary="$commit_name committed to $REPOSITORY $commit_when!"
+        body="$commit_summary\n\n$commit_body"
+
+        if [ $CONFIG != "" && $MATRIX == "enable" ]; then
+            source $CONFIG
+
+            markdown_body="**$summary**\n$commit_summary\n$commit_body"
+            html_body="<strong>$summary</strong><br>$commit_summary<br>$commit_body"
+            path="_matrix/client/r0/rooms/$MATRIX_ROOM:$MATRIX_DOMAIN/send/m.room.message"
+            query="?access_token=$MATRIX_TOKEN"
+
+            curl -X PUT --header 'Content-Type: application/json' \
+                --header 'Accept: application/json' \
+                -d "{\"msgtype\":\"m.notice\",
+                \"body\":\"$markdown_body\",
+                \"format\":\"org.matrix.custom.html\",
+                \"formatted_body\":\"$html_body\"}" \
+                "https://$MATRIX_DOMAIN/$path/$(date +%s)$query"
+
+        if [ $CONFIG != "" && $DESKTOP == "enable" || $CONFIG == "" ]; then
+            if [ "`uname`" == "Darwin" ]; then
                 command="osascript -e 'display notification \"$body\" with title \"$summary\"'"
                 eval $command
             else
                 `notify-send "$summary" "$body"`
             fi
         fi
+
         sleep "$refresh_delay"
     done
 }
